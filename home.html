@@ -37,42 +37,57 @@
     padding: .55vw 1.3vw; font-size: 1.3vw; font-weight: 600;
   }
 
-  .dock {
-    position: absolute; left: 4vw; right: 2vw; bottom: 3.2vw;
-    white-space: nowrap;
+  /* Resplandor del color de la app seleccionada (como Apple TV) */
+  #glow {
+    position: fixed; left: -10%; right: -10%; bottom: -25%; height: 75%;
+    background: radial-gradient(ellipse at center, rgba(0,0,0,0) 0%, rgba(0,0,0,0) 70%);
+    opacity: .55; -webkit-transition: background .4s ease; transition: background .4s ease;
   }
-  /* Tarjeta estilo Apple TV: 16:9, radio suave, sin borde, nombre debajo */
+
+  /* Bandeja translúcida que contiene las apps */
+  .dock {
+    position: absolute; left: 50%; bottom: 2.6vw;
+    -webkit-transform: translateX(-50%); transform: translateX(-50%);
+    white-space: nowrap;
+    padding: 1.7vw 1.7vw 3.4vw;
+    background: rgba(30,30,34,.38);
+    border-radius: 2.6vw;
+  }
+  /* Tarjeta estilo Apple TV: 5:3, radio ~10% de la altura, sin borde, logo completo */
   .app {
     display: inline-block; vertical-align: top; position: relative;
-    width: 13.6vw; margin-right: 1.5vw;
+    width: 12.4vw; margin-right: 1.9vw;
   }
+  .app:last-child { margin-right: 0; }
   .app .card {
-    position: relative; width: 100%; height: 7.65vw;
-    border-radius: .6vw; overflow: hidden;
-    box-shadow: 0 .4vw 1.2vw rgba(0,0,0,.35);
-    -webkit-transition: -webkit-transform .2s ease, box-shadow .2s ease;
-    transition: transform .2s ease, box-shadow .2s ease;
+    position: relative; width: 100%; height: 7.44vw;
+    border-radius: .8vw; overflow: hidden;
+    box-shadow: 0 .5vw 1.2vw rgba(0,0,0,.35);
+    -webkit-transition: -webkit-transform .22s ease, box-shadow .22s ease;
+    transition: transform .22s ease, box-shadow .22s ease;
   }
-  .app .card:after {
+  /* Luz suave arriba, sombra abajo: da volumen a la tarjeta */
+  .app .card:before {
     content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
-    background: linear-gradient(160deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 45%);
-    opacity: 0; -webkit-transition: opacity .2s ease; transition: opacity .2s ease;
+    background: linear-gradient(to bottom, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 45%, rgba(0,0,0,.12) 100%);
   }
   .app .logo {
     position: absolute; left: 50%; top: 50%;
     -webkit-transform: translate(-50%,-50%); transform: translate(-50%,-50%);
-    max-height: 70%;
+    max-height: 62%;
   }
   .app .logo.white { -webkit-filter: brightness(0) invert(1); filter: brightness(0) invert(1); }
-  .app .name { margin-top: .9vw; font-size: 1.15vw; font-weight: 600; text-shadow: 0 .1vw .4vw rgba(0,0,0,.7); }
-  .app .sub { font-size: .95vw; color: rgba(255,255,255,.6); margin-top: .15vw; }
-  .app .name, .app .sub { opacity: .75; -webkit-transition: opacity .2s; transition: opacity .2s; }
-  .app.focus .card {
-    -webkit-transform: scale(1.08) translateY(-.4vw); transform: scale(1.08) translateY(-.4vw);
-    box-shadow: 0 1.6vw 3vw rgba(0,0,0,.65);
+  /* El nombre solo aparece en la tarjeta seleccionada */
+  .app .name {
+    position: absolute; left: 0; right: 0; top: 8.7vw; text-align: center;
+    font-size: 1.15vw; font-weight: 500; opacity: 0;
+    -webkit-transition: opacity .2s; transition: opacity .2s;
   }
-  .app.focus .card:after { opacity: 1; }
-  .app.focus .name, .app.focus .sub { opacity: 1; }
+  .app.focus .card {
+    -webkit-transform: scale(1.14) translateY(-.3vw); transform: scale(1.14) translateY(-.3vw);
+    box-shadow: 0 1.8vw 3.2vw rgba(0,0,0,.6);
+  }
+  .app.focus .name { opacity: 1; }
   .hint { position: absolute; right: 3vw; top: 6vw; font-size: 1vw; opacity: .7; text-shadow: 0 .1vw .4vw rgba(0,0,0,.7); }
 
   .toast {
@@ -117,6 +132,7 @@
   <div class="title" id="title">Buenas tardes<small id="date"></small></div>
   <div class="pill" id="clock">--:--</div>
 
+  <div id="glow"></div>
   <div class="dock" id="dock"></div>
   <div class="hint">&#9650; Cambiar fondo</div>
   <div class="toast" id="toast"></div>
@@ -130,13 +146,13 @@
 <script>
   // ===== Edita aquí tus apps =====
   var APPS = [
-    // logo: archivo en /icons; size: tamaño del logo (% del ancho del icono); white: pintar el logo de blanco
-    { name: "YouTube", match: "youtube", url: "https://www.youtube.com/tv", web: true, bg: "#ffffff", logo: "youtube", size: 44 },
-    { name: "Netflix", match: "netflix", bg: "#000000", logo: "netflix", size: 26 },
-    { name: "Prime Video", match: "prime", bg: "#00a8e1", logo: "primevideo", size: 58 },
-    { name: "Disney+", match: "disney", bg: "linear-gradient(160deg,#0e2a6b,#04102e)", logo: "disneyplus", size: 62, white: true },
-    { name: "Twitch", match: "twitch", bg: "#9146ff", logo: "twitch", size: 34 },
-    { name: "Spotify", match: "spotify", bg: "#121212", logo: "spotify", size: 38 }
+    // logo: archivo en /icons; size: ancho del logo (% de la tarjeta); white: pintar el logo de blanco; glow: color del resplandor
+    { name: "Netflix", match: "netflix", bg: "#ffffff", logo: "netflix-wordmark", size: 72, glow: "229,9,20" },
+    { name: "YouTube", match: "youtube", url: "https://www.youtube.com/tv", web: true, bg: "#ffffff", logo: "youtube-wordmark", size: 66, glow: "255,0,0" },
+    { name: "Prime Video", match: "prime", bg: "linear-gradient(180deg,#27b5ff,#0f8fe0)", logo: "primevideo", size: 74, white: true, glow: "0,168,225" },
+    { name: "Disney+", match: "disney", bg: "radial-gradient(ellipse at 50% 30%,#1f4fb8 0%,#0b1f5c 60%,#050f33 100%)", logo: "disneyplus", size: 70, white: true, glow: "40,90,220" },
+    { name: "Twitch", match: "twitch", bg: "linear-gradient(180deg,#a26bff,#7c3aed)", logo: "twitch", size: 30, white: true, glow: "145,70,255" },
+    { name: "Spotify", match: "spotify", bg: "linear-gradient(180deg,#232323,#0d0d0d)", logo: "spotify", size: 36, glow: "30,215,96" }
   ];
   var ICONS = "https://cdn.jsdelivr.net/gh/asustechsync/tv-home@main/icons/";
 
@@ -178,12 +194,14 @@
     el.className = "app";
     el.innerHTML = '<div class="card" style="background:' + APPS[i].bg + '">' +
       '<img class="logo' + (APPS[i].white ? ' white' : '') + '" src="' + ICONS + APPS[i].logo + '.svg" style="width:' + APPS[i].size + '%"></div>' +
-      '<div class="name">' + APPS[i].name + '</div><div class="sub">' + (APPS[i].web ? "Ver ahora" : "Abrir app") + '</div>';
+      '<div class="name">' + APPS[i].name + '</div>';
     dock.appendChild(el); apps.push(el);
   }
   function focusApp(n) {
     idx = Math.max(0, Math.min(apps.length - 1, n));
     for (var i = 0; i < apps.length; i++) apps[i].className = i === idx ? "app focus" : "app";
+    var c = APPS[idx].glow || "255,255,255";
+    $("glow").style.background = "radial-gradient(ellipse at " + (8 + idx * 16.8) + "% 60%, rgba(" + c + ",.85) 0%, rgba(" + c + ",.25) 35%, rgba(" + c + ",0) 65%)";
   }
   focusApp(parseInt(load("tvhome.app", "0"), 10) || 0);
 
