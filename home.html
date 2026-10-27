@@ -230,16 +230,40 @@
     var t = $("toast"); t.textContent = msg; t.style.opacity = 1;
     clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.opacity = 0; }, 3000);
   }
+  // IDs conocidos de cada app en TVs Samsung (varían según modelo/año; se prueban en orden)
+  var APP_IDS = {
+    netflix: ["3201907018807", "11101200001", "RN1MCdNq8t.Netflix", "org.tizen.netflix-app"],
+    prime:   ["3201910019365", "3201512006785", "evKhCgZelL.AmazonIgnitionLauncher2", "org.tizen.primevideo"],
+    disney:  ["3201901017640", "MCmYXNxgcu.DisneyPlus"],
+    twitch:  ["3202203026841", "3201908019041", "owfmxp5uK6.Twitch"],
+    spotify: ["3201606009684", "rJeHak5zRg.Spotify"],
+    youtube: ["111299001912", "9Ur5IzDKqV.TizenYouTube"]
+  };
+
+  function launchIds(ids, i, app, lastErr) {
+    if (i >= ids.length) {
+      toast("No se pudo abrir " + app.name + (lastErr ? " (" + lastErr + ")" : ""));
+      return;
+    }
+    try {
+      tizen.application.launch(ids[i], function () {}, function (err) {
+        launchIds(ids, i + 1, app, err && err.name);
+      });
+    } catch (e) {
+      launchIds(ids, i + 1, app, e && e.name);
+    }
+  }
+
   function openApp(app) {
     if (app.web) { window.location.href = app.url; return; }
-    loadInstalled(function () {
-      var id = findNative(app);
-      if (id) {
-        try { tizen.application.launch(id, null, function () { toast("No se pudo abrir " + app.name); }); return; }
-        catch (e) {}
-      }
-      toast(app.name + " no está instalada en esta TV");
-    });
+    if (typeof tizen === "undefined" || !tizen.application) {
+      toast("TizenBrew no permite abrir apps desde aquí");
+      return;
+    }
+    var ids = (APP_IDS[app.match] || []).slice();
+    var found = findNative(app);   // si la TV deja listar apps, se usa primero el ID real
+    if (found) ids.unshift(found);
+    launchIds(ids, 0, app, null);
   }
   loadInstalled(function () {});
 
