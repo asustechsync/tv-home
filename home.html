@@ -267,10 +267,10 @@
   }
   // IDs conocidos de cada app en TVs Samsung (varían según modelo/año; se prueban en orden)
   var APP_IDS = {
-    netflix: ["3201907018807", "11101200001", "RN1MCdNq8t.Netflix", "org.tizen.netflix-app"],
-    prime:   ["3201910019365", "3201512006785", "evKhCgZelL.AmazonIgnitionLauncher2", "org.tizen.primevideo"],
+    netflix: ["11101200001", "3201907018807", "RN1MCdNq8t.Netflix", "org.tizen.netflix-app"],
+    prime:   ["3201512006785", "3201910019365", "evKhCgZelL.AmazonIgnitionLauncher2", "org.tizen.primevideo"],
     disney:  ["3201901017640", "MCmYXNxgcu.DisneyPlus"],
-    twitch:  ["3202203026841", "3201908019041", "owfmxp5uK6.Twitch"],
+    twitch:  ["3201908019041", "3202203026841", "owfmxp5uK6.Twitch"],
     spotify: ["3201606009684", "rJeHak5zRg.Spotify"],
     youtube: ["111299001912", "9Ur5IzDKqV.TizenYouTube"]
   };
@@ -328,10 +328,28 @@
     line("\nCuadro VERDE = la TV deja mostrar el icono real.  ROJO = bloqueado.");
   }
 
+  // Alternativa cuando la API de Tizen no está disponible: servicio interno de la TV (puerto 8001),
+  // el mismo que usan las apps de control remoto. La TV se llama a sí misma por 127.0.0.1.
+  function restLaunch(app) {
+    var ids = (APP_IDS[app.match] || []).slice();
+    var n = 0;
+    toast("Abriendo " + app.name + "...");
+    (function next() {
+      if (n >= ids.length) return;
+      var id = ids[n++];
+      var x = new XMLHttpRequest();
+      x.open("POST", "http://127.0.0.1:8001/api/v2/applications/" + id, true);
+      x.timeout = 4000;
+      x.onload = function () { if (x.status === 404 || x.status === 400) next(); };
+      x.onerror = x.ontimeout = function () { setTimeout(next, 500); };
+      try { x.send(); } catch (e) { setTimeout(next, 500); }
+    })();
+  }
+
   function openApp(app) {
     if (app.web) { window.location.href = app.url; return; }
     if (typeof tizen === "undefined" || !tizen.application) {
-      toast("TizenBrew no permite abrir apps desde aquí");
+      restLaunch(app);
       return;
     }
     var ids = (APP_IDS[app.match] || []).slice();
