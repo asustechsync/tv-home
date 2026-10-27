@@ -48,8 +48,15 @@
     box-shadow: 0 .6vw 1.6vw rgba(0,0,0,.45);
     -webkit-transition: -webkit-transform .18s ease; transition: transform .18s ease;
   }
-  .app svg { position: absolute; left: 50%; top: 50%; width: 4.2vw; height: 4.2vw; margin: -2.1vw 0 0 -2.1vw; }
-  .app .txt { position: absolute; left: 0; right: 0; top: 50%; margin-top: -1.4vw; text-align: center; font-size: 2.4vw; font-weight: 800; line-height: 2.8vw; }
+  .app { overflow: hidden; }
+  .app .logo {
+    position: absolute; left: 50%; top: 50%;
+    -webkit-transform: translate(-50%,-50%); transform: translate(-50%,-50%);
+    max-height: 70%;
+  }
+  .app .logo.white { -webkit-filter: brightness(0) invert(1); filter: brightness(0) invert(1); }
+  .app .native { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
+  .app.focus { overflow: visible; }
   .app.focus { -webkit-transform: scale(1.15) translateY(-.6vw); transform: scale(1.15) translateY(-.6vw); box-shadow: 0 1.4vw 3vw rgba(0,0,0,.7); }
   .app.focus:after {
     content: ""; position: absolute; left: -.35vw; top: -.35vw; right: -.35vw; bottom: -.35vw;
@@ -109,16 +116,15 @@
 <script>
   // ===== Edita aquí tus apps =====
   var APPS = [
-    { name: "YouTube", url: "https://www.youtube.com/tv", web: true, bg: "linear-gradient(135deg,#ff4b4b,#c4161c)",
-      icon: '<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4" fill="#fff"/><path d="M10 9l5 3-5 3z" fill="#e0201c"/></svg>' },
-    { name: "Netflix", match: "netflix", url: "https://www.netflix.com", bg: "linear-gradient(135deg,#1c1c1c,#000)", txt: '<span style="color:#e50914;font-size:3.4vw">N</span>' },
-    { name: "Prime Video", match: "prime", url: "https://www.primevideo.com", bg: "linear-gradient(135deg,#1ab7ea,#0a5a8a)", txt: "prime" },
-    { name: "Disney+", match: "disney", url: "https://www.disneyplus.com", bg: "linear-gradient(135deg,#1b3a8f,#0b1640)", txt: "Disney+" },
-    { name: "Twitch", match: "twitch", url: "https://www.twitch.tv", bg: "linear-gradient(135deg,#a970ff,#6a2ad8)",
-      icon: '<svg viewBox="0 0 24 24"><path d="M4 3l-1 4v13h5v3h3l3-3h4l5-5V3z" fill="#fff"/><path d="M8 5v10h3v2l2-2h4l3-3V5z" fill="#7b3ff2"/><path d="M12 8h2v4h-2zM16 8h2v4h-2z" fill="#fff"/></svg>' },
-    { name: "Spotify", match: "spotify", url: "https://open.spotify.com", bg: "linear-gradient(135deg,#2ee06d,#139c45)",
-      icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#111"/><path d="M6.5 9.5c3.8-1.1 7.8-.7 11 1M7.3 12.6c3.1-.8 6.3-.5 9 .9M8 15.5c2.4-.6 4.8-.4 6.9.7" stroke="#1ed760" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>' }
+    // logo: archivo en /icons; size: tamaño del logo (% del ancho del icono); white: pintar el logo de blanco
+    { name: "YouTube", match: "youtube", url: "https://www.youtube.com/tv", web: true, bg: "#ffffff", logo: "youtube", size: 44 },
+    { name: "Netflix", match: "netflix", bg: "#000000", logo: "netflix", size: 26 },
+    { name: "Prime Video", match: "prime", bg: "#00a8e1", logo: "primevideo", size: 58 },
+    { name: "Disney+", match: "disney", bg: "linear-gradient(160deg,#0e2a6b,#04102e)", logo: "disneyplus", size: 62, white: true },
+    { name: "Twitch", match: "twitch", bg: "#9146ff", logo: "twitch", size: 34 },
+    { name: "Spotify", match: "spotify", bg: "#121212", logo: "spotify", size: 38 }
   ];
+  var ICONS = "https://cdn.jsdelivr.net/gh/asustechsync/tv-home@main/icons/";
 
   // ===== Edita aquí tus fondos (cualquier enlace a una imagen) =====
   var FONDOS = [
@@ -157,7 +163,7 @@
     var el = document.createElement("div");
     el.className = "app";
     el.style.background = APPS[i].bg;
-    el.innerHTML = APPS[i].icon || ('<div class="txt">' + APPS[i].txt + '</div>');
+    el.innerHTML = '<img class="logo' + (APPS[i].white ? ' white' : '') + '" src="' + ICONS + APPS[i].logo + '.svg" style="width:' + APPS[i].size + '%">';
     dock.appendChild(el); apps.push(el);
   }
   function focusApp(n) {
