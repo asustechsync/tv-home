@@ -88,9 +88,9 @@
   .app.focus .name { opacity: 1; }
   .hint { position: absolute; right: 3vw; top: 6vw; font-size: 1vw; opacity: .7; text-shadow: 0 .1vw .4vw rgba(0,0,0,.7); }
 
-  .toast {
-    position: absolute; left: 50%; top: 3vw; width: 40vw; margin-left: -20vw; text-align: center;
-    background: rgba(20,20,20,.85); border-radius: 2vw; padding: 1vw; font-size: 1.4vw;
+  .toast { white-space: pre-line;
+    position: absolute; left: 50%; top: 11vw; width: 62vw; margin-left: -31vw; text-align: center;
+    background: rgba(20,20,20,.92); border-radius: 1.2vw; padding: 1.4vw; font-size: 2vw; line-height: 1.4; z-index: 5;
     opacity: 0; -webkit-transition: opacity .3s; transition: opacity .3s;
   }
 
@@ -263,7 +263,7 @@
   }
   function toast(msg) {
     var t = $("toast"); t.textContent = msg; t.style.opacity = 1;
-    clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.opacity = 0; }, 3000);
+    clearTimeout(toast.h); toast.h = setTimeout(function () { t.style.opacity = 0; }, 10000);
   }
   // IDs conocidos de cada app en TVs Samsung (varían según modelo/año; se prueban en orden)
   var APP_IDS = {
@@ -275,17 +275,27 @@
     youtube: ["111299001912", "9Ur5IzDKqV.TizenYouTube"]
   };
 
+  var errs = [];
+  function why(n) {
+    if (n === "SecurityError") return "SecurityError = TizenBrew no tiene permiso para abrir apps";
+    if (n === "NotFoundError") return "NotFoundError = esa app no existe con ese ID";
+    if (n === "InvalidValuesError") return "InvalidValuesError = ID no válido";
+    return n;
+  }
   function launchIds(ids, i, app, lastErr) {
+    if (lastErr) errs.push(ids[i - 1] + ": " + lastErr);
     if (i >= ids.length) {
-      toast("No se pudo abrir " + app.name + (lastErr ? " (" + lastErr + ")" : ""));
+      toast("No se pudo abrir " + app.name + "\n" + (errs.length ? why(errs[errs.length - 1].split(": ")[1]) : "") +
+            "\nIDs probados: " + errs.length);
+      errs = [];
       return;
     }
     try {
-      tizen.application.launch(ids[i], function () {}, function (err) {
-        launchIds(ids, i + 1, app, err && err.name);
+      tizen.application.launch(ids[i], function () { errs = []; }, function (err) {
+        launchIds(ids, i + 1, app, (err && err.name) || "error");
       });
     } catch (e) {
-      launchIds(ids, i + 1, app, e && e.name);
+      launchIds(ids, i + 1, app, (e && e.name) || "error");
     }
   }
 
