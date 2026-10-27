@@ -2,113 +2,37 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Home</title>
-<style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { width: 100%; height: 100%; overflow: hidden; }
-  body {
-    background: #1e2a44;
-    background: linear-gradient(135deg, #2b3d66 0%, #1a2440 55%, #121a30 100%);
-    color: #ffffff;
-    font-family: "Samsung One", "Helvetica Neue", Arial, sans-serif;
-    padding: 5vw 6vw;
-    position: relative;
-  }
-  header { overflow: hidden; }
-  .left { float: left; }
-  .clock { font-size: 9vw; font-weight: 300; line-height: 1; }
-  .date { margin-top: 1vw; font-size: 2.2vw; color: #c9d3ea; text-transform: capitalize; }
-  .greet { float: right; font-size: 2.4vw; color: #c9d3ea; padding-top: 1.5vw; }
-  main { position: absolute; left: 6vw; right: 6vw; bottom: 9vw; }
-  .label { font-size: 1.6vw; color: #c9d3ea; letter-spacing: 0.3vw; text-transform: uppercase; margin-bottom: 1.6vw; font-weight: bold; }
-  .row { white-space: nowrap; }
-  .tile {
-    display: inline-block; vertical-align: top;
-    width: 15vw; height: 9.5vw; margin-right: 1.8vw;
-    border-radius: 1.4vw;
-    border: 0.25vw solid rgba(255,255,255,0.25);
-    padding: 1.3vw 1.5vw;
-    position: relative;
-    -webkit-transition: -webkit-transform .15s ease;
-    transition: transform .15s ease;
-  }
-  .tile .name { position: absolute; left: 1.5vw; bottom: 2.6vw; font-size: 2.2vw; font-weight: bold; }
-  .tile .sub { position: absolute; left: 1.5vw; bottom: 1.2vw; font-size: 1.2vw; color: rgba(255,255,255,0.85); }
-  .tile.focus {
-    -webkit-transform: scale(1.12);
-    transform: scale(1.12);
-    border-color: #ffffff;
-    box-shadow: 0 1vw 2.5vw rgba(0,0,0,0.6);
-  }
-  footer { position: absolute; left: 6vw; bottom: 3vw; font-size: 1.3vw; color: #c9d3ea; }
-</style>
+<style>html,body{margin:0;height:100%;background:#000}</style>
 </head>
 <body>
-  <header>
-    <div class="left">
-      <div class="clock" id="clock">--:--</div>
-      <div class="date" id="date"></div>
-    </div>
-    <div class="greet" id="greet"></div>
-  </header>
-
-  <main>
-    <div class="label">Apps</div>
-    <div class="row" id="row"></div>
-  </main>
-
-  <footer>&#9664; &#9654; navegar &nbsp;&middot;&nbsp; OK abrir</footer>
-
 <script>
-  // Edita esta lista para cambiar tus accesos
-  var APPS = [
-    { name: "YouTube",  sub: "TizenTube", url: "https://www.youtube.com/tv", color: "#d92b2b" },
-    { name: "Netflix",  sub: "Series y películas", url: "https://www.netflix.com", color: "#b0060f" },
-    { name: "Prime Video", sub: "Amazon", url: "https://www.primevideo.com", color: "#0f79af" },
-    { name: "Disney+",  sub: "Streaming", url: "https://www.disneyplus.com", color: "#2f55d4" },
-    { name: "Twitch",   sub: "En vivo", url: "https://www.twitch.tv", color: "#7339d6" }
+  // Carga el diseño más reciente directo desde GitHub (sin esperar la caché de jsDelivr).
+  // Si no hay conexión con GitHub, usa la copia home.html que viene con el módulo.
+  var SOURCES = [
+    "https://raw.githubusercontent.com/asustechsync/tv-home/main/home.html?t=" + Date.now(),
+    "home.html"
   ];
 
-  var row = document.getElementById("row");
-  var tiles = [], idx = 0;
-
-  for (var i = 0; i < APPS.length; i++) {
-    var a = APPS[i];
-    var el = document.createElement("div");
-    el.className = "tile";
-    el.style.background = a.color;
-    el.innerHTML = '<div class="name">' + a.name + '</div><div class="sub">' + a.sub + '</div>';
-    row.appendChild(el);
-    tiles.push(el);
+  function render(html) {
+    document.open();
+    document.write(html);
+    document.close();
   }
 
-  function setFocus(n) {
-    idx = Math.max(0, Math.min(tiles.length - 1, n));
-    for (var i = 0; i < tiles.length; i++) {
-      tiles[i].className = i === idx ? "tile focus" : "tile";
-    }
+  function tryLoad(i) {
+    if (i >= SOURCES.length) return;
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", SOURCES[i], true);
+    xhr.timeout = 6000;
+    xhr.onload = function () {
+      if (xhr.status >= 200 && xhr.status < 300 && xhr.responseText.indexOf("<html") >= 0) render(xhr.responseText);
+      else tryLoad(i + 1);
+    };
+    xhr.onerror = xhr.ontimeout = function () { tryLoad(i + 1); };
+    xhr.send();
   }
-  setFocus(0);
-
-  document.addEventListener("keydown", function (e) {
-    var k = e.keyCode;
-    if (k === 37) setFocus(idx - 1);        // izquierda
-    else if (k === 39) setFocus(idx + 1);   // derecha
-    else if (k === 13) window.location.href = APPS[idx].url; // OK
-  });
-
-  function tick() {
-    var d = new Date();
-    var h = ("0" + d.getHours()).slice(-2), m = ("0" + d.getMinutes()).slice(-2);
-    document.getElementById("clock").textContent = h + ":" + m;
-    var dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
-    var meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
-    document.getElementById("date").textContent = dias[d.getDay()] + ", " + d.getDate() + " de " + meses[d.getMonth()];
-    var g = d.getHours() < 12 ? "Buenos días" : d.getHours() < 19 ? "Buenas tardes" : "Buenas noches";
-    document.getElementById("greet").textContent = g;
-  }
-  tick(); setInterval(tick, 20000);
+  tryLoad(0);
 </script>
 </body>
 </html>

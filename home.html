@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Home</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #000; }
+  body { color: #fff; font-family: "Samsung One", "SF Pro Display", "Helvetica Neue", Arial, sans-serif; }
+
+  #bg, #bg2 {
+    position: absolute; left: 0; top: 0; width: 100%; height: 100%;
+    background-size: cover; background-position: center;
+    -webkit-transition: opacity .8s ease; transition: opacity .8s ease;
+  }
+  #bg2 { opacity: 0; }
+  .shade {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 55%;
+    background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,.55) 60%, rgba(0,0,0,.8) 100%);
+  }
+  .shade-top {
+    position: absolute; left: 0; right: 0; top: 0; height: 30%;
+    background: linear-gradient(to top, rgba(0,0,0,0) 0%, rgba(0,0,0,.45) 100%);
+  }
+
+  .title {
+    position: absolute; left: 4vw; top: 3.5vw;
+    font-size: 4.2vw; font-weight: 900; line-height: .95; letter-spacing: -.1vw;
+    text-transform: uppercase; text-shadow: 0 .3vw 1.2vw rgba(0,0,0,.6);
+  }
+  .title small { display: block; font-size: 1.6vw; font-weight: 400; letter-spacing: 0; text-transform: none; margin-top: .8vw; opacity: .9; }
+
+  .pill {
+    position: absolute; right: 3vw; top: 3vw;
+    background: rgba(40,40,40,.55); border-radius: 3vw;
+    padding: .55vw 1.3vw; font-size: 1.3vw; font-weight: 600;
+  }
+
+  .dock {
+    position: absolute; left: 4vw; right: 4vw; bottom: 4.5vw;
+    white-space: nowrap;
+  }
+  .app {
+    display: inline-block; vertical-align: bottom; position: relative;
+    width: 12.6vw; height: 7.6vw; margin-right: 1.6vw;
+    border-radius: 1.5vw;
+    box-shadow: 0 .6vw 1.6vw rgba(0,0,0,.45);
+    -webkit-transition: -webkit-transform .18s ease; transition: transform .18s ease;
+  }
+  .app svg { position: absolute; left: 50%; top: 50%; width: 4.2vw; height: 4.2vw; margin: -2.1vw 0 0 -2.1vw; }
+  .app .txt { position: absolute; left: 0; right: 0; top: 50%; margin-top: -1.4vw; text-align: center; font-size: 2.4vw; font-weight: 800; line-height: 2.8vw; }
+  .app.focus { -webkit-transform: scale(1.15) translateY(-.6vw); transform: scale(1.15) translateY(-.6vw); box-shadow: 0 1.4vw 3vw rgba(0,0,0,.7); }
+  .app.focus:after {
+    content: ""; position: absolute; left: -.35vw; top: -.35vw; right: -.35vw; bottom: -.35vw;
+    border: .25vw solid rgba(255,255,255,.95); border-radius: 1.8vw;
+  }
+  .appname {
+    position: absolute; left: 4vw; bottom: 1.6vw; font-size: 1.5vw; font-weight: 600;
+    text-shadow: 0 .2vw .6vw rgba(0,0,0,.8);
+  }
+  .hint { position: absolute; right: 4vw; bottom: 1.6vw; font-size: 1.1vw; opacity: .75; }
+
+  /* Selector de fondos */
+  .picker {
+    position: absolute; left: 0; right: 0; bottom: 0; padding: 2vw 4vw 3vw;
+    background: rgba(10,10,14,.92);
+    -webkit-transform: translateY(100%); transform: translateY(100%);
+    -webkit-transition: -webkit-transform .3s ease; transition: transform .3s ease;
+  }
+  .picker.open { -webkit-transform: translateY(0); transform: translateY(0); }
+  .picker h2 { font-size: 1.7vw; font-weight: 700; margin-bottom: 1.4vw; }
+  .picker h2 span { font-size: 1.1vw; font-weight: 400; opacity: .7; margin-left: 1vw; }
+  .thumbs { white-space: nowrap; }
+  .thumb {
+    display: inline-block; position: relative; width: 13vw; height: 7.3vw; margin-right: 1.2vw;
+    border-radius: 1vw; background-size: cover; background-position: center; background-color: #333;
+    -webkit-transition: -webkit-transform .15s ease; transition: transform .15s ease;
+  }
+  .thumb.focus { -webkit-transform: scale(1.1); transform: scale(1.1); }
+  .thumb.focus:after { content: ""; position: absolute; left: -.3vw; top: -.3vw; right: -.3vw; bottom: -.3vw; border: .22vw solid #fff; border-radius: 1.25vw; }
+  .thumb .lbl { position: absolute; left: .8vw; bottom: .6vw; font-size: 1vw; font-weight: 600; text-shadow: 0 .1vw .4vw #000; }
+  .thumb.sel .lbl:before { content: "\2713  "; }
+</style>
+</head>
+<body>
+  <div id="bg"></div><div id="bg2"></div>
+  <div class="shade-top"></div><div class="shade"></div>
+
+  <div class="title" id="title">Buenas tardes<small id="date"></small></div>
+  <div class="pill" id="clock">--:--</div>
+
+  <div class="dock" id="dock"></div>
+  <div class="appname" id="appname"></div>
+  <div class="hint">&#9650; Cambiar fondo</div>
+
+  <div class="picker" id="picker">
+    <h2>Fondo de pantalla<span>&#9664; &#9654; elegir &middot; OK aplicar &middot; &#9660; cerrar</span></h2>
+    <div class="thumbs" id="thumbs"></div>
+  </div>
+
+<script>
+  // ===== Edita aquí tus apps =====
+  var APPS = [
+    { name: "YouTube", url: "https://www.youtube.com/tv", bg: "linear-gradient(135deg,#ff4b4b,#c4161c)",
+      icon: '<svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="4" fill="#fff"/><path d="M10 9l5 3-5 3z" fill="#e0201c"/></svg>' },
+    { name: "Netflix", url: "https://www.netflix.com", bg: "linear-gradient(135deg,#1c1c1c,#000)", txt: '<span style="color:#e50914;font-size:3.4vw">N</span>' },
+    { name: "Prime Video", url: "https://www.primevideo.com", bg: "linear-gradient(135deg,#1ab7ea,#0a5a8a)", txt: "prime" },
+    { name: "Disney+", url: "https://www.disneyplus.com", bg: "linear-gradient(135deg,#1b3a8f,#0b1640)", txt: "Disney+" },
+    { name: "Twitch", url: "https://www.twitch.tv", bg: "linear-gradient(135deg,#a970ff,#6a2ad8)",
+      icon: '<svg viewBox="0 0 24 24"><path d="M4 3l-1 4v13h5v3h3l3-3h4l5-5V3z" fill="#fff"/><path d="M8 5v10h3v2l2-2h4l3-3V5z" fill="#7b3ff2"/><path d="M12 8h2v4h-2zM16 8h2v4h-2z" fill="#fff"/></svg>' },
+    { name: "Spotify", url: "https://open.spotify.com", bg: "linear-gradient(135deg,#2ee06d,#139c45)",
+      icon: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#111"/><path d="M6.5 9.5c3.8-1.1 7.8-.7 11 1M7.3 12.6c3.1-.8 6.3-.5 9 .9M8 15.5c2.4-.6 4.8-.4 6.9.7" stroke="#1ed760" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg>' }
+  ];
+
+  // ===== Edita aquí tus fondos (cualquier enlace a una imagen) =====
+  var FONDOS = [
+    { name: "Montañas", url: "https://picsum.photos/id/1018/1920/1080" },
+    { name: "Lago",     url: "https://picsum.photos/id/1015/1920/1080" },
+    { name: "Bosque",   url: "https://picsum.photos/id/1043/1920/1080" },
+    { name: "Costa",    url: "https://picsum.photos/id/1053/1920/1080" },
+    { name: "Ciudad",   url: "https://picsum.photos/id/1067/1920/1080" },
+    { name: "Desierto", url: "https://picsum.photos/id/1002/1920/1080" },
+    { name: "Noche",    url: "https://picsum.photos/id/1022/1920/1080" }
+  ];
+
+  function load(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : v; } catch (e) { return d; } }
+  function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  function $(id) { return document.getElementById(id); }
+
+  // --- Fondo ---
+  var bgIdx = parseInt(load("tvhome.bg", "0"), 10) || 0;
+  if (bgIdx >= FONDOS.length) bgIdx = 0;
+  var front = $("bg"), back = $("bg2");
+  function showBg(i) {
+    var url = FONDOS[i].url;
+    var img = new Image();
+    img.onload = function () {
+      back.style.backgroundImage = "url('" + url + "')";
+      back.style.opacity = 1; front.style.opacity = 0;
+      var t = front; front = back; back = t;
+    };
+    img.src = url;
+  }
+  front.style.backgroundImage = "url('" + FONDOS[bgIdx].url + "')";
+
+  // --- Dock ---
+  var dock = $("dock"), apps = [], idx = 0;
+  for (var i = 0; i < APPS.length; i++) {
+    var el = document.createElement("div");
+    el.className = "app";
+    el.style.background = APPS[i].bg;
+    el.innerHTML = APPS[i].icon || ('<div class="txt">' + APPS[i].txt + '</div>');
+    dock.appendChild(el); apps.push(el);
+  }
+  function focusApp(n) {
+    idx = Math.max(0, Math.min(apps.length - 1, n));
+    for (var i = 0; i < apps.length; i++) apps[i].className = i === idx ? "app focus" : "app";
+    $("appname").textContent = APPS[idx].name;
+  }
+  focusApp(parseInt(load("tvhome.app", "0"), 10) || 0);
+
+  // --- Selector ---
+  var thumbs = [], tIdx = bgIdx, pickerOpen = false;
+  for (var j = 0; j < FONDOS.length; j++) {
+    var t = document.createElement("div");
+    t.className = "thumb";
+    t.style.backgroundImage = "url('" + FONDOS[j].url.replace("1920/1080", "400/225") + "')";
+    t.innerHTML = '<div class="lbl">' + FONDOS[j].name + '</div>';
+    $("thumbs").appendChild(t); thumbs.push(t);
+  }
+  function focusThumb(n) {
+    tIdx = Math.max(0, Math.min(thumbs.length - 1, n));
+    for (var i = 0; i < thumbs.length; i++) {
+      thumbs[i].className = "thumb" + (i === tIdx ? " focus" : "") + (i === bgIdx ? " sel" : "");
+    }
+  }
+  function openPicker(o) {
+    pickerOpen = o;
+    $("picker").className = o ? "picker open" : "picker";
+    if (o) focusThumb(bgIdx);
+  }
+
+  document.addEventListener("keydown", function (e) {
+    var k = e.keyCode;
+    if (pickerOpen) {
+      if (k === 37) focusThumb(tIdx - 1);
+      else if (k === 39) focusThumb(tIdx + 1);
+      else if (k === 13) { bgIdx = tIdx; save("tvhome.bg", bgIdx); showBg(bgIdx); focusThumb(tIdx); }
+      else if (k === 40 || k === 10009 || k === 8) openPicker(false);
+      e.preventDefault();
+      return;
+    }
+    if (k === 37) focusApp(idx - 1);
+    else if (k === 39) focusApp(idx + 1);
+    else if (k === 38) openPicker(true);
+    else if (k === 13) { save("tvhome.app", idx); window.location.href = APPS[idx].url; }
+  });
+
+  // --- Reloj y saludo ---
+  function tick() {
+    var d = new Date();
+    $("clock").textContent = ("0" + d.getHours()).slice(-2) + ":" + ("0" + d.getMinutes()).slice(-2);
+    var dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    var meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    var g = d.getHours() < 12 ? "Buenos días" : d.getHours() < 19 ? "Buenas tardes" : "Buenas noches";
+    $("title").firstChild.nodeValue = g;
+    var dia = dias[d.getDay()];
+    $("date").textContent = dia.charAt(0).toUpperCase() + dia.slice(1) + ", " + d.getDate() + " de " + meses[d.getMonth()];
+  }
+  tick(); setInterval(tick, 20000);
+</script>
+</body>
+</html>
