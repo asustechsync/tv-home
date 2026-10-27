@@ -5,5 +5,5 @@
   "packageType": "app",
   "appName": "Home",
   "appPath": "index.html",
-  "keys": []
+  "keys": ["ColorF2Yellow", "ColorF3Blue"]
 }
