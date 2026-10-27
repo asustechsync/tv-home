@@ -421,6 +421,8 @@
     if (!diagOpen) return;
     d.innerHTML = "PRUEBA DE ICONOS DE LA TV  (pulse ▼ para cerrar)\n\n";
     function line(html) { d.innerHTML += html + "\n"; }
+    line("Resolución de la página: " + window.innerWidth + " x " + window.innerHeight +
+         "   escala: " + window.devicePixelRatio + "   pantalla: " + screen.width + " x " + screen.height + "\n");
     if (typeof tizen === "undefined" || !tizen.application) { line("tizen: NO disponible en esta página"); return; }
     line("tizen: disponible ✓");
     try {
