@@ -149,7 +149,7 @@
     // logo: archivo en /icons; size: ancho del logo (% de la tarjeta); white: pintar el logo de blanco; glow: color del resplandor
     { name: "Netflix", match: "netflix", bg: "#ffffff", logo: "netflix-wordmark", size: 72, glow: "229,9,20" },
     { name: "YouTube", match: "youtube", url: "https://www.youtube.com/tv", web: true, bg: "#ffffff", logo: "youtube-wordmark", size: 66, glow: "255,0,0" },
-    { name: "Prime Video", match: "prime", bg: "linear-gradient(180deg,#27b5ff,#0f8fe0)", logo: "primevideo", size: 74, white: true, glow: "0,168,225" },
+    { name: "Prime Video", match: "prime", bg: "linear-gradient(180deg,#27b5ff,#0f8fe0)", logo: "primevideo", size: 110, white: true, tall: true, glow: "0,168,225" },
     { name: "Disney+", match: "disney", bg: "radial-gradient(ellipse at 50% 30%,#1f4fb8 0%,#0b1f5c 60%,#050f33 100%)", logo: "disneyplus", size: 70, white: true, glow: "40,90,220" },
     { name: "Twitch", match: "twitch", bg: "linear-gradient(180deg,#a26bff,#7c3aed)", logo: "twitch", size: 30, white: true, glow: "145,70,255" },
     { name: "Spotify", match: "spotify", bg: "linear-gradient(180deg,#232323,#0d0d0d)", logo: "spotify", size: 36, glow: "30,215,96" }
@@ -193,7 +193,7 @@
     var el = document.createElement("div");
     el.className = "app";
     el.innerHTML = '<div class="card" style="background:' + APPS[i].bg + '">' +
-      '<img class="logo' + (APPS[i].white ? ' white' : '') + '" src="' + ICONS + APPS[i].logo + '.svg" style="width:' + APPS[i].size + '%"></div>' +
+      '<img class="logo' + (APPS[i].white ? ' white' : '') + '" src="' + ICONS + APPS[i].logo + '.svg" style="width:' + APPS[i].size + '%' + (APPS[i].tall ? ';max-height:none' : '') + '"></div>' +
       '<div class="name">' + APPS[i].name + '</div>';
     dock.appendChild(el); apps.push(el);
   }
