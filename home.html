@@ -445,7 +445,6 @@
   function restLaunch(app) {
     var ids = (APP_IDS[app.match] || []).slice();
     var n = 0;
-    toast("Abriendo " + app.name + "...");
     (function next() {
       if (n >= ids.length) return;
       var id = ids[n++];
