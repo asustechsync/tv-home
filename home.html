@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=3840, height=2160, initial-scale=1">
 <title>Home</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -232,23 +232,27 @@
   function save(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   function $(id) { return document.getElementById(id); }
 
+  // Fondos: el principal en 4K (3840x2160); el del menú, que va desenfocado, en tamaño chico para ahorrar memoria
+  function big(u)   { return u.replace("1920/1080", "3840/2160"); }
+  function small(u) { return u.replace("1920/1080", "960/540"); }
+
   // --- Fondo ---
   var bgIdx = parseInt(load("tvhome.bg", "0"), 10) || 0;
   if (bgIdx >= FONDOS.length) bgIdx = 0;
   var front = $("bg"), back = $("bg2");
   function showBg(i) {
-    var url = FONDOS[i].url;
+    var url = big(FONDOS[i].url);
     var img = new Image();
     img.onload = function () {
       back.style.backgroundImage = "url('" + url + "')";
-      $("menuBg").style.backgroundImage = "url('" + url + "')";
+      $("menuBg").style.backgroundImage = "url('" + small(FONDOS[i].url) + "')";
       back.style.opacity = 1; front.style.opacity = 0;
       var t = front; front = back; back = t;
     };
     img.src = url;
   }
-  front.style.backgroundImage = "url('" + FONDOS[bgIdx].url + "')";
-  $("menuBg").style.backgroundImage = "url('" + FONDOS[bgIdx].url + "')";
+  front.style.backgroundImage = "url('" + big(FONDOS[bgIdx].url) + "')";
+  $("menuBg").style.backgroundImage = "url('" + small(FONDOS[bgIdx].url) + "')";
 
   // --- Dock ---
   var dock = $("dock"), apps = [], idx = 0;
