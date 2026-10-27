@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1920, initial-scale=1">
+<title>Home</title>
+<style>
+  :root {
+    --bg: #0b0c10;
+    --bg2: #14161d;
+    --fg: #f2f3f5;
+    --muted: #7d8290;
+    --accent: #ffffff;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { width: 100%; height: 100%; overflow: hidden; }
+  body {
+    background: radial-gradient(1200px 700px at 20% 0%, #1a1d27 0%, var(--bg) 60%);
+    color: var(--fg);
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    padding: 90px 120px;
+    display: flex; flex-direction: column;
+  }
+  header { display: flex; justify-content: space-between; align-items: flex-start; }
+  .clock { font-size: 120px; font-weight: 200; letter-spacing: -2px; line-height: 1; }
+  .date { margin-top: 14px; font-size: 28px; color: var(--muted); text-transform: capitalize; }
+  .greet { font-size: 28px; color: var(--muted); padding-top: 18px; }
+  main { margin-top: auto; }
+  .label { font-size: 22px; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 28px; }
+  .row { display: flex; gap: 32px; }
+  .tile {
+    width: 280px; height: 170px; border-radius: 24px;
+    background: var(--bg2);
+    border: 2px solid transparent;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 24px 28px;
+    font-size: 30px; font-weight: 500;
+    transition: transform .18s ease, background .18s ease, border-color .18s ease;
+    outline: none;
+  }
+  .tile small { font-size: 18px; color: var(--muted); font-weight: 400; margin-top: 6px; }
+  .tile .dot { width: 14px; height: 14px; border-radius: 50%; margin-bottom: auto; }
+  .tile.focus {
+    transform: scale(1.1);
+    background: #1f222d;
+    border-color: var(--accent);
+    box-shadow: 0 20px 50px rgba(0,0,0,.5);
+  }
+  footer { margin-top: 60px; font-size: 18px; color: var(--muted); }
+</style>
+</head>
+<body>
+  <header>
+    <div>
+      <div class="clock" id="clock">--:--</div>
+      <div class="date" id="date"></div>
+    </div>
+    <div class="greet" id="greet"></div>
+  </header>
+
+  <main>
+    <div class="label">Apps</div>
+    <div class="row" id="row"></div>
+  </main>
+
+  <footer>◀ ▶ navegar &nbsp;·&nbsp; OK abrir</footer>
+
+<script>
+  // Edita esta lista para cambiar tus accesos
+  var APPS = [
+    { name: "YouTube",  sub: "TizenTube", url: "https://www.youtube.com/tv", color: "#ff3b30" },
+    { name: "Netflix",  sub: "Series y películas", url: "https://www.netflix.com", color: "#e50914" },
+    { name: "Prime Video", sub: "Amazon", url: "https://www.primevideo.com", color: "#00a8e1" },
+    { name: "Disney+",  sub: "Streaming", url: "https://www.disneyplus.com", color: "#4f7cff" },
+    { name: "Twitch",   sub: "En vivo", url: "https://www.twitch.tv", color: "#9146ff" }
+  ];
+
+  var row = document.getElementById("row");
+  var tiles = [], idx = 0;
+
+  APPS.forEach(function (a, i) {
+    var el = document.createElement("div");
+    el.className = "tile";
+    el.tabIndex = 0;
+    el.innerHTML = '<span class="dot" style="background:' + a.color + '"></span>' + a.name + '<small>' + a.sub + '</small>';
+    row.appendChild(el);
+    tiles.push(el);
+  });
+
+  function setFocus(i) {
+    idx = Math.max(0, Math.min(tiles.length - 1, i));
+    tiles.forEach(function (t, n) { t.classList.toggle("focus", n === idx); });
+  }
+  setFocus(0);
+
+  document.addEventListener("keydown", function (e) {
+    var k = e.keyCode;
+    if (k === 37) setFocus(idx - 1);        // izquierda
+    else if (k === 39) setFocus(idx + 1);   // derecha
+    else if (k === 13) window.location.href = APPS[idx].url; // OK
+  });
+
+  function tick() {
+    var d = new Date();
+    var h = ("0" + d.getHours()).slice(-2), m = ("0" + d.getMinutes()).slice(-2);
+    document.getElementById("clock").textContent = h + ":" + m;
+    var dias = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+    var meses = ["enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre"];
+    document.getElementById("date").textContent = dias[d.getDay()] + ", " + d.getDate() + " de " + meses[d.getMonth()];
+    var g = d.getHours() < 12 ? "Buenos días" : d.getHours() < 19 ? "Buenas tardes" : "Buenas noches";
+    document.getElementById("greet").textContent = g;
+  }
+  tick(); setInterval(tick, 20000);
+</script>
+</body>
+</html>

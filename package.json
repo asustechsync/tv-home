@@ -1,0 +1,9 @@
+{
+  "name": "tv-home",
+  "version": "1.0.0",
+  "description": "Home minimalista para TizenBrew",
+  "packageType": "app",
+  "appName": "Home",
+  "appPath": "index.html",
+  "keys": []
+}
