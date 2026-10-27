@@ -38,35 +38,42 @@
   }
 
   .dock {
-    position: absolute; left: 4vw; right: 4vw; bottom: 4.5vw;
+    position: absolute; left: 4vw; right: 2vw; bottom: 3.2vw;
     white-space: nowrap;
   }
+  /* Tarjeta estilo Apple TV: 16:9, radio suave, sin borde, nombre debajo */
   .app {
-    display: inline-block; vertical-align: bottom; position: relative;
-    width: 12.6vw; height: 7.6vw; margin-right: 1.6vw;
-    border-radius: 1.5vw;
-    box-shadow: 0 .6vw 1.6vw rgba(0,0,0,.45);
-    -webkit-transition: -webkit-transform .18s ease; transition: transform .18s ease;
+    display: inline-block; vertical-align: top; position: relative;
+    width: 13.6vw; margin-right: 1.5vw;
   }
-  .app { overflow: hidden; }
+  .app .card {
+    position: relative; width: 100%; height: 7.65vw;
+    border-radius: .6vw; overflow: hidden;
+    box-shadow: 0 .4vw 1.2vw rgba(0,0,0,.35);
+    -webkit-transition: -webkit-transform .2s ease, box-shadow .2s ease;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  .app .card:after {
+    content: ""; position: absolute; left: 0; top: 0; right: 0; bottom: 0;
+    background: linear-gradient(160deg, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 45%);
+    opacity: 0; -webkit-transition: opacity .2s ease; transition: opacity .2s ease;
+  }
   .app .logo {
     position: absolute; left: 50%; top: 50%;
     -webkit-transform: translate(-50%,-50%); transform: translate(-50%,-50%);
     max-height: 70%;
   }
   .app .logo.white { -webkit-filter: brightness(0) invert(1); filter: brightness(0) invert(1); }
-  .app .native { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; }
-  .app.focus { overflow: visible; }
-  .app.focus { -webkit-transform: scale(1.15) translateY(-.6vw); transform: scale(1.15) translateY(-.6vw); box-shadow: 0 1.4vw 3vw rgba(0,0,0,.7); }
-  .app.focus:after {
-    content: ""; position: absolute; left: -.35vw; top: -.35vw; right: -.35vw; bottom: -.35vw;
-    border: .25vw solid rgba(255,255,255,.95); border-radius: 1.8vw;
+  .app .name { margin-top: .9vw; font-size: 1.15vw; font-weight: 600; text-shadow: 0 .1vw .4vw rgba(0,0,0,.7); }
+  .app .sub { font-size: .95vw; color: rgba(255,255,255,.6); margin-top: .15vw; }
+  .app .name, .app .sub { opacity: .75; -webkit-transition: opacity .2s; transition: opacity .2s; }
+  .app.focus .card {
+    -webkit-transform: scale(1.08) translateY(-.4vw); transform: scale(1.08) translateY(-.4vw);
+    box-shadow: 0 1.6vw 3vw rgba(0,0,0,.65);
   }
-  .appname {
-    position: absolute; left: 4vw; bottom: 1.6vw; font-size: 1.5vw; font-weight: 600;
-    text-shadow: 0 .2vw .6vw rgba(0,0,0,.8);
-  }
-  .hint { position: absolute; right: 4vw; bottom: 1.6vw; font-size: 1.1vw; opacity: .75; }
+  .app.focus .card:after { opacity: 1; }
+  .app.focus .name, .app.focus .sub { opacity: 1; }
+  .hint { position: absolute; right: 3vw; top: 6vw; font-size: 1vw; opacity: .7; text-shadow: 0 .1vw .4vw rgba(0,0,0,.7); }
 
   .toast {
     position: absolute; left: 50%; top: 3vw; width: 40vw; margin-left: -20vw; text-align: center;
@@ -111,7 +118,6 @@
   <div class="pill" id="clock">--:--</div>
 
   <div class="dock" id="dock"></div>
-  <div class="appname" id="appname"></div>
   <div class="hint">&#9650; Cambiar fondo</div>
   <div class="toast" id="toast"></div>
   <div class="diag" id="diag"></div>
@@ -170,14 +176,14 @@
   for (var i = 0; i < APPS.length; i++) {
     var el = document.createElement("div");
     el.className = "app";
-    el.style.background = APPS[i].bg;
-    el.innerHTML = '<img class="logo' + (APPS[i].white ? ' white' : '') + '" src="' + ICONS + APPS[i].logo + '.svg" style="width:' + APPS[i].size + '%">';
+    el.innerHTML = '<div class="card" style="background:' + APPS[i].bg + '">' +
+      '<img class="logo' + (APPS[i].white ? ' white' : '') + '" src="' + ICONS + APPS[i].logo + '.svg" style="width:' + APPS[i].size + '%"></div>' +
+      '<div class="name">' + APPS[i].name + '</div><div class="sub">' + (APPS[i].web ? "Ver ahora" : "Abrir app") + '</div>';
     dock.appendChild(el); apps.push(el);
   }
   function focusApp(n) {
     idx = Math.max(0, Math.min(apps.length - 1, n));
     for (var i = 0; i < apps.length; i++) apps[i].className = i === idx ? "app focus" : "app";
-    $("appname").textContent = APPS[idx].name;
   }
   focusApp(parseInt(load("tvhome.app", "0"), 10) || 0);
 
