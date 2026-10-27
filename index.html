@@ -2,56 +2,51 @@
 <html lang="es">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=1920, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Home</title>
 <style>
-  :root {
-    --bg: #0b0c10;
-    --bg2: #14161d;
-    --fg: #f2f3f5;
-    --muted: #7d8290;
-    --accent: #ffffff;
-  }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { width: 100%; height: 100%; overflow: hidden; }
   body {
-    background: radial-gradient(1200px 700px at 20% 0%, #1a1d27 0%, var(--bg) 60%);
-    color: var(--fg);
-    font-family: "Helvetica Neue", Arial, sans-serif;
-    padding: 90px 120px;
-    display: flex; flex-direction: column;
+    background: #1e2a44;
+    background: linear-gradient(135deg, #2b3d66 0%, #1a2440 55%, #121a30 100%);
+    color: #ffffff;
+    font-family: "Samsung One", "Helvetica Neue", Arial, sans-serif;
+    padding: 5vw 6vw;
+    position: relative;
   }
-  header { display: flex; justify-content: space-between; align-items: flex-start; }
-  .clock { font-size: 120px; font-weight: 200; letter-spacing: -2px; line-height: 1; }
-  .date { margin-top: 14px; font-size: 28px; color: var(--muted); text-transform: capitalize; }
-  .greet { font-size: 28px; color: var(--muted); padding-top: 18px; }
-  main { margin-top: auto; }
-  .label { font-size: 22px; color: var(--muted); letter-spacing: 4px; text-transform: uppercase; margin-bottom: 28px; }
-  .row { display: flex; gap: 32px; }
+  header { overflow: hidden; }
+  .left { float: left; }
+  .clock { font-size: 9vw; font-weight: 300; line-height: 1; }
+  .date { margin-top: 1vw; font-size: 2.2vw; color: #c9d3ea; text-transform: capitalize; }
+  .greet { float: right; font-size: 2.4vw; color: #c9d3ea; padding-top: 1.5vw; }
+  main { position: absolute; left: 6vw; right: 6vw; bottom: 9vw; }
+  .label { font-size: 1.6vw; color: #c9d3ea; letter-spacing: 0.3vw; text-transform: uppercase; margin-bottom: 1.6vw; font-weight: bold; }
+  .row { white-space: nowrap; }
   .tile {
-    width: 280px; height: 170px; border-radius: 24px;
-    background: var(--bg2);
-    border: 2px solid transparent;
-    display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 24px 28px;
-    font-size: 30px; font-weight: 500;
-    transition: transform .18s ease, background .18s ease, border-color .18s ease;
-    outline: none;
+    display: inline-block; vertical-align: top;
+    width: 15vw; height: 9.5vw; margin-right: 1.8vw;
+    border-radius: 1.4vw;
+    border: 0.25vw solid rgba(255,255,255,0.25);
+    padding: 1.3vw 1.5vw;
+    position: relative;
+    -webkit-transition: -webkit-transform .15s ease;
+    transition: transform .15s ease;
   }
-  .tile small { font-size: 18px; color: var(--muted); font-weight: 400; margin-top: 6px; }
-  .tile .dot { width: 14px; height: 14px; border-radius: 50%; margin-bottom: auto; }
+  .tile .name { position: absolute; left: 1.5vw; bottom: 2.6vw; font-size: 2.2vw; font-weight: bold; }
+  .tile .sub { position: absolute; left: 1.5vw; bottom: 1.2vw; font-size: 1.2vw; color: rgba(255,255,255,0.85); }
   .tile.focus {
-    transform: scale(1.1);
-    background: #1f222d;
-    border-color: var(--accent);
-    box-shadow: 0 20px 50px rgba(0,0,0,.5);
+    -webkit-transform: scale(1.12);
+    transform: scale(1.12);
+    border-color: #ffffff;
+    box-shadow: 0 1vw 2.5vw rgba(0,0,0,0.6);
   }
-  footer { margin-top: 60px; font-size: 18px; color: var(--muted); }
+  footer { position: absolute; left: 6vw; bottom: 3vw; font-size: 1.3vw; color: #c9d3ea; }
 </style>
 </head>
 <body>
   <header>
-    <div>
+    <div class="left">
       <div class="clock" id="clock">--:--</div>
       <div class="date" id="date"></div>
     </div>
@@ -63,33 +58,36 @@
     <div class="row" id="row"></div>
   </main>
 
-  <footer>◀ ▶ navegar &nbsp;·&nbsp; OK abrir</footer>
+  <footer>&#9664; &#9654; navegar &nbsp;&middot;&nbsp; OK abrir</footer>
 
 <script>
   // Edita esta lista para cambiar tus accesos
   var APPS = [
-    { name: "YouTube",  sub: "TizenTube", url: "https://www.youtube.com/tv", color: "#ff3b30" },
-    { name: "Netflix",  sub: "Series y películas", url: "https://www.netflix.com", color: "#e50914" },
-    { name: "Prime Video", sub: "Amazon", url: "https://www.primevideo.com", color: "#00a8e1" },
-    { name: "Disney+",  sub: "Streaming", url: "https://www.disneyplus.com", color: "#4f7cff" },
-    { name: "Twitch",   sub: "En vivo", url: "https://www.twitch.tv", color: "#9146ff" }
+    { name: "YouTube",  sub: "TizenTube", url: "https://www.youtube.com/tv", color: "#d92b2b" },
+    { name: "Netflix",  sub: "Series y películas", url: "https://www.netflix.com", color: "#b0060f" },
+    { name: "Prime Video", sub: "Amazon", url: "https://www.primevideo.com", color: "#0f79af" },
+    { name: "Disney+",  sub: "Streaming", url: "https://www.disneyplus.com", color: "#2f55d4" },
+    { name: "Twitch",   sub: "En vivo", url: "https://www.twitch.tv", color: "#7339d6" }
   ];
 
   var row = document.getElementById("row");
   var tiles = [], idx = 0;
 
-  APPS.forEach(function (a, i) {
+  for (var i = 0; i < APPS.length; i++) {
+    var a = APPS[i];
     var el = document.createElement("div");
     el.className = "tile";
-    el.tabIndex = 0;
-    el.innerHTML = '<span class="dot" style="background:' + a.color + '"></span>' + a.name + '<small>' + a.sub + '</small>';
+    el.style.background = a.color;
+    el.innerHTML = '<div class="name">' + a.name + '</div><div class="sub">' + a.sub + '</div>';
     row.appendChild(el);
     tiles.push(el);
-  });
+  }
 
-  function setFocus(i) {
-    idx = Math.max(0, Math.min(tiles.length - 1, i));
-    tiles.forEach(function (t, n) { t.classList.toggle("focus", n === idx); });
+  function setFocus(n) {
+    idx = Math.max(0, Math.min(tiles.length - 1, n));
+    for (var i = 0; i < tiles.length; i++) {
+      tiles[i].className = i === idx ? "tile focus" : "tile";
+    }
   }
   setFocus(0);
 
